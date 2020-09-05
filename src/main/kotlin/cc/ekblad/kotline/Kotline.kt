@@ -19,16 +19,21 @@ class Kotline(private val term: Term) : Closeable {
     private val currentLineWidth: Int
         get() = currentLine.sumBy(::charWidth)
     private var prompt: String = ""
+    private var closed: Boolean = false
 
     init {
         term.init()
     }
 
     override fun close() {
+        closed = true
         term.close()
     }
 
     fun readLine(prompt: String = ""): String? {
+        if (closed) {
+            return null
+        }
         this.prompt = prompt
         moveCursor(0)
         while (true) {
