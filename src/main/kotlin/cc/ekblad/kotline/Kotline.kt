@@ -140,7 +140,6 @@ class Kotline(private val term: Term) : Closeable {
 
     private fun newLine() {
         println()
-        moveCursor(-currentLineChars)
     }
 
     private fun commitLine(): String {
