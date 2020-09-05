@@ -10,13 +10,13 @@ val nixTerm: Term by lazy { NixTerm() }
 private class NixTerm  : Term {
     private var ttyConfig = ""
 
-    override fun setup() {
+    override fun init() {
         ttyConfig = stty(arrayOf("-g")).trim()
         stty(arrayOf("-icanon", "min", "1"))
         stty(arrayOf("-echo"))
     }
 
-    override fun shutdown() {
+    override fun close() {
         stty(arrayOf(ttyConfig))
     }
 

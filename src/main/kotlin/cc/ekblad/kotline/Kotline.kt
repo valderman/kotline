@@ -1,9 +1,10 @@
 package cc.ekblad.kotline
 
+import java.io.Closeable
 import kotlin.math.max
 import kotlin.math.min
 
-class Kotline(private val term: Term) {
+class Kotline(private val term: Term) : Closeable {
     private var committedHistory: ArrayList<String> = ArrayList()
     private val workingHistory: ArrayList<String> = ArrayList(listOf(""))
     private var currentLineIndex: Int = 0
@@ -20,8 +21,11 @@ class Kotline(private val term: Term) {
     private var prompt: String = ""
 
     init {
-        term.setup()
-        Runtime.getRuntime().addShutdownHook(Thread { term.shutdown() })
+        term.init()
+    }
+
+    override fun close() {
+        term.close()
     }
 
     fun readLine(prompt: String = ""): String? {
@@ -43,6 +47,11 @@ class Kotline(private val term: Term) {
                 is Down -> moveHistory(1)
                 is EOF -> if (currentLine.isEmpty()) {
                     return handleEof()
+                }
+                null -> return if (currentLine.isEmpty()) {
+                    null
+                } else {
+                    handleReturn()
                 }
             }
         }

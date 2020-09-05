@@ -3,6 +3,8 @@
  */
 package cc.ekblad.kotline
 
+private const val ACTUAL_EOF = -1
+
 private const val K_RETURN = 10
 private const val K_ESCAPE = 27
 private const val K_BACKSPACE = 127
@@ -29,6 +31,7 @@ internal fun getInput(term: Term): Input? {
         K_ESCAPE -> handleEscape(term)
         K_BACKSPACE -> Backspace
         K_EOF -> EOF
+        ACTUAL_EOF -> null
         else -> Character(c.toChar())
     }
 }

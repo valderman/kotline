@@ -1,16 +1,18 @@
 package cc.ekblad.kotline
 
-interface Term {
+import java.io.Closeable
+
+interface Term : Closeable {
     /**
      * Turn off terminal echo + line buffering.
      */
-    fun setup()
+    fun init()
 
     /**
      * Restore terminal to the mode in which it was prior to
      * setup() being called.
      */
-    fun shutdown()
+    override fun close()
 
     /**
      * Get one byte of input from the terminal.
