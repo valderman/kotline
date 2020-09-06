@@ -4,7 +4,7 @@ import java.io.Closeable
 import java.lang.IllegalStateException
 
 class Kotline(private val term: Term) : Closeable {
-    private var history: ShadowHistory<AnsiLine> = ShadowHistory(AnsiLine(), { AnsiLine(it.toString()) })
+    private var history: ShadowHistory<AnsiLine> = ShadowHistory(AnsiLine(term), { AnsiLine(term, it.toString()) })
     private val currentLine: AnsiLine
         get() = history.current
     private var closed: Boolean = false
@@ -54,16 +54,16 @@ class Kotline(private val term: Term) : Closeable {
 
     private fun handleEof(): String? {
         newLine()
-        history.resetShadow(AnsiLine())
+        history.resetShadow(AnsiLine(term))
         return null
     }
 
     private fun handleReturn(): String {
         newLine()
         return if(currentLine.toString().isBlank()) {
-            history.resetShadow(AnsiLine())
+            history.resetShadow(AnsiLine(term))
         } else {
-            history.commitAndResetShadow(AnsiLine())
+            history.commitAndResetShadow(AnsiLine(term))
         }.toString()
     }
 
@@ -80,6 +80,21 @@ class Kotline(private val term: Term) : Closeable {
     }
 
     private fun newLine() {
-        println()
+        term.print("\n")
+        term.flush()
+    }
+}
+
+fun <T> kotline(action: Kotline.() -> T): T =
+    Kotline(autodetectTerminal()).use { it.action() }
+
+private fun autodetectTerminal(): Term {
+    val os = System.getProperty("os.name").toLowerCase()
+    return when {
+        os.contains("linux") -> nixTerm
+        os.contains("win") -> TODO("windows support")
+        os.contains("mac") -> nixTerm
+        os.contains("nix|aix|sunos") -> nixTerm
+        else -> error("Unsupported OS: $os")
     }
 }

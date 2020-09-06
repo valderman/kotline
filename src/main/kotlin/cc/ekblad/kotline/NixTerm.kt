@@ -7,7 +7,7 @@ import java.nio.charset.Charset
 
 val nixTerm: Term by lazy { NixTerm() }
 
-private class NixTerm  : Term {
+private class NixTerm : Term {
     private var ttyConfig = ""
 
     override fun init() {
@@ -19,8 +19,6 @@ private class NixTerm  : Term {
     override fun close() {
         stty(arrayOf(ttyConfig))
     }
-
-    override fun getChar() = System.`in`.read()
 
     private fun stty(args: Array<String>): String {
         val invocation = arrayOf("/bin/stty", "-F", "/dev/tty") + args

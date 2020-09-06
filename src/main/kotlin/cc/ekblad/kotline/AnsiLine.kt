@@ -3,7 +3,7 @@ package cc.ekblad.kotline
 import kotlin.math.max
 import kotlin.math.min
 
-internal class AnsiLine(initialValue: String = "") {
+internal class AnsiLine(private val term: Term, initialValue: String = "") {
     private var charIndex: Int = 0
     private val cursorPosition: Int
         get() = line.take(charIndex).sumBy(::charWidth)
@@ -23,10 +23,11 @@ internal class AnsiLine(initialValue: String = "") {
             offset > 0 -> charIndex = min(charIndex + offset, lineChars)
             offset < 0 -> charIndex = max(charIndex + offset, 0)
         }
-        print("\r$prompt")
+        term.print("\r$prompt")
         if(cursorPosition > 0) {
-            print("\u001b[${cursorPosition}C")
+            term.print("\u001b[${cursorPosition}C")
         }
+        term.flush()
     }
 
     fun moveToStart(prompt: String) {
@@ -77,7 +78,8 @@ internal class AnsiLine(initialValue: String = "") {
 
     fun refresh(prompt: String, padding: Int = 0) {
         saveCursor()
-        print("\r$prompt$line${" ".repeat(max(0, padding))}")
+        term.print("\r$prompt$line${" ".repeat(max(0, padding))}")
         restoreCursor()
+        term.flush()
     }
 }
