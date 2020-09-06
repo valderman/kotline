@@ -1,14 +1,13 @@
 package cc.ekblad.kotline
 
 import java.io.Closeable
-import java.lang.IllegalStateException
 
 class Kotline(private val term: Term) : Closeable {
     private var history: ShadowHistory<AnsiLine> = ShadowHistory(AnsiLine(term), { AnsiLine(term, it.toString()) })
     private val currentLine: AnsiLine
         get() = history.current
     private var closed: Boolean = false
-    private var shutdownHook = Thread { close() }
+    private var shutdownHook = Thread { close(true) }
 
     init {
         term.init()
@@ -16,12 +15,14 @@ class Kotline(private val term: Term) : Closeable {
     }
 
     override fun close() {
+        close(false)
+    }
+    
+    private fun close(calledFromShutdownHook: Boolean) {
         closed = true
         term.close()
-        try {
+        if (!calledFromShutdownHook) {
             Runtime.getRuntime().removeShutdownHook(shutdownHook)
-        } catch (e: IllegalStateException) {
-            // Just ignore; we're in the middle of shutting down the VM
         }
     }
 
