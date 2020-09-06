@@ -134,6 +134,15 @@ class KotlineTest {
     }
 
     @Test
+    fun `ctrl-d on empty line properly resets history`() {
+        val kotline = Kotline(TestTerm(listOf("hej", "\u001B[Axyz\u001B[B\u0004", "\u001B[A")))
+        assertEquals("hej", kotline.readLine())
+        assertNull(kotline.readLine())
+        assertEquals("", kotline.readLine())
+        assertEquals("hej", kotline.readLine())
+    }
+
+    @Test
     fun `ctrl-d on non-empty line is a no-op`() {
         val kotline = Kotline(TestTerm(listOf("abc\u0004def")))
         assertEquals("abcdef", kotline.readLine())

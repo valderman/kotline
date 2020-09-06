@@ -43,7 +43,7 @@ class Kotline(private val term: Term) : Closeable {
                     return handleEof()
                 }
                 null -> return if (currentLine.toString().isEmpty()) {
-                    null
+                    handleEof()
                 } else {
                     handleReturn()
                 }
@@ -53,6 +53,7 @@ class Kotline(private val term: Term) : Closeable {
 
     private fun handleEof(): String? {
         newLine()
+        history.resetShadow(AnsiLine())
         return null
     }
 
