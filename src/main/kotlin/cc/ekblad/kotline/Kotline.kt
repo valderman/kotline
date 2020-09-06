@@ -7,14 +7,17 @@ class Kotline(private val term: Term) : Closeable {
     private val currentLine: AnsiLine
         get() = history.current
     private var closed: Boolean = false
+    private var shutdownHook = Thread { close() }
 
     init {
         term.init()
+        Runtime.getRuntime().addShutdownHook(shutdownHook)
     }
 
     override fun close() {
         closed = true
         term.close()
+        Runtime.getRuntime().removeShutdownHook(shutdownHook)
     }
 
     fun readLine(prompt: String = ""): String? {
