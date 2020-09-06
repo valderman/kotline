@@ -1,24 +1,11 @@
 package cc.ekblad.kotline
 
 import java.io.Closeable
-import kotlin.math.max
-import kotlin.math.min
 
 class Kotline(private val term: Term) : Closeable {
-    private var committedHistory: ArrayList<String> = ArrayList()
-    private val workingHistory: ArrayList<String> = ArrayList(listOf(""))
-    private var currentLineIndex: Int = 0
-    private var charIndex: Int = 0
-    private val cursorPosition: Int
-        get() = currentLine.take(charIndex).sumBy(::charWidth)
-    private var currentLine: String
-        get() = workingHistory[currentLineIndex]
-        set(value) { workingHistory[currentLineIndex] = value }
-    private val currentLineChars: Int
-        get() = currentLine.length
-    private val currentLineWidth: Int
-        get() = currentLine.sumBy(::charWidth)
-    private var prompt: String = ""
+    private var history: ShadowHistory<AnsiLine> = ShadowHistory(AnsiLine(), { AnsiLine(it.toString()) })
+    private val currentLine: AnsiLine
+        get() = history.current
     private var closed: Boolean = false
 
     init {
@@ -34,48 +21,31 @@ class Kotline(private val term: Term) : Closeable {
         if (closed) {
             return null
         }
-        this.prompt = prompt
-        moveCursor(0)
+        currentLine.moveCursor(prompt, 0)
         while (true) {
             when (val c = getInput(term)) {
-                is Character -> addToCurrentLine(c.char)
+                is Character -> currentLine.addChar(prompt, c.char)
                 is Return -> return handleReturn()
-                is Left -> moveCursor(-1)
-                is Right -> moveCursor(1)
-                is Delete -> deleteCharAtCursor(false)
-                is Backspace -> deleteCharAtCursor(true)
-                is Home -> moveCursor(-currentLineChars)
-                is End -> moveCursor(currentLineChars)
-                is ControlLeft -> oneWordBack()
-                is ControlRight -> oneWordForward()
-                is Up -> moveHistory(-1)
-                is Down -> moveHistory(1)
-                is EOF -> if (currentLine.isEmpty()) {
+                is Left -> currentLine.moveCursor(prompt, -1)
+                is Right -> currentLine.moveCursor(prompt, 1)
+                is Delete -> currentLine.deleteCharAtCursor(prompt, false)
+                is Backspace -> currentLine.deleteCharAtCursor(prompt, true)
+                is Home -> currentLine.moveToStart(prompt)
+                is End -> currentLine.moveToEnd(prompt)
+                is ControlLeft -> currentLine.oneWordBack(prompt)
+                is ControlRight -> currentLine.oneWordForward(prompt)
+                is Up -> moveHistory(prompt, -1)
+                is Down -> moveHistory(prompt, 1)
+                is EOF -> if (currentLine.toString().isEmpty()) {
                     return handleEof()
                 }
-                null -> return if (currentLine.isEmpty()) {
+                null -> return if (currentLine.toString().isEmpty()) {
                     null
                 } else {
                     handleReturn()
                 }
             }
         }
-    }
-
-    private fun oneWordBack() {
-        val prefix = currentLine.take(charIndex)
-        val blank = prefix.takeLastWhile { it.isWhitespace() }.length
-        val nonblank = prefix.trimEnd().takeLastWhile { !it.isWhitespace() }.length
-        val offset = blank + nonblank
-        moveCursor(-offset)
-    }
-
-    private fun oneWordForward() {
-        val prefix = currentLine.drop(charIndex)
-        val blank = prefix.takeWhile { it.isWhitespace() }.length
-        val nonblank = prefix.trimStart().takeWhile { !it.isWhitespace() }.length
-        val offset = blank + nonblank
-        moveCursor(offset)
     }
 
     private fun handleEof(): String? {
@@ -85,70 +55,26 @@ class Kotline(private val term: Term) : Closeable {
 
     private fun handleReturn(): String {
         newLine()
-        return if(currentLine.isBlank()) {
-            currentLine
+        return if(currentLine.toString().isBlank()) {
+            history.resetShadow(AnsiLine())
         } else {
-            commitLine()
-        }
+            history.commitAndResetShadow(AnsiLine())
+        }.toString()
     }
 
-    private fun moveHistory(offset: Int) {
-        val oldWidth = currentLineWidth
-        currentLineIndex = min(workingHistory.size-1, max(0, currentLineIndex + offset))
-        refreshCurrentLine(oldWidth - currentLineWidth)
-        moveCursor(currentLineChars)
-    }
-
-    private fun addToCurrentLine(char: Char) {
-        var before = currentLine
-        var after = ""
-        if(charIndex < currentLineChars) {
-            before = currentLine.substring(0, charIndex)
-            after = currentLine.substring(charIndex)
+    private fun moveHistory(prompt: String, offset: Int) {
+        require(offset in -1 .. 1)
+        val oldWidth = currentLine.lineWidth
+        when (offset) {
+            0 -> { }
+            1 -> history.forward()
+            -1 -> history.back()
         }
-        currentLine = before + char + after
-        moveCursor(1)
-        refreshCurrentLine(2)
-    }
-
-    private fun deleteCharAtCursor(before: Boolean) {
-        if (!currentLine.isEmpty()) {
-            if(before) {
-                moveCursor(-1)
-            }
-            currentLine = currentLine.removeRange(charIndex, min(charIndex + 1, currentLineChars))
-            refreshCurrentLine(2)
-        }
-    }
-
-    private fun refreshCurrentLine(padding: Int = 0) {
-        saveCursor()
-        print("\r$prompt$currentLine${" ".repeat(max(0, padding))}")
-        restoreCursor()
-    }
-
-    private fun moveCursor(offset: Int) {
-        when {
-            offset > 0 -> charIndex = min(charIndex + offset, currentLineChars)
-            offset < 0 -> charIndex = max(charIndex + offset, 0)
-        }
-        print("\r$prompt")
-        if(cursorPosition > 0) {
-            print("\u001b[${cursorPosition}C")
-        }
+        currentLine.refresh(prompt, oldWidth - currentLine.lineWidth)
+        currentLine.moveToEnd(prompt)
     }
 
     private fun newLine() {
         println()
-    }
-
-    private fun commitLine(): String {
-        val line = currentLine
-        committedHistory.add(currentLine)
-        workingHistory.clear()
-        workingHistory.addAll(committedHistory)
-        workingHistory.add("")
-        currentLineIndex = workingHistory.size - 1
-        return line
     }
 }
