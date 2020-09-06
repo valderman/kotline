@@ -44,13 +44,9 @@ class Kotline(private val term: Term) : Closeable {
                 is ControlRight -> currentLine.oneWordForward(prompt)
                 is Up -> moveHistory(prompt, -1)
                 is Down -> moveHistory(prompt, 1)
-                is EOF -> if (currentLine.toString().isEmpty()) {
-                    return handleEof()
-                }
-                null -> return if (currentLine.toString().isEmpty()) {
-                    handleEof()
-                } else {
-                    handleReturn()
+                is EOF -> when {
+                    currentLine.toString().isEmpty() -> return handleEof()
+                    c.hard -> return handleReturn()
                 }
             }
         }

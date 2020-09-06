@@ -143,6 +143,12 @@ class KotlineTest {
     }
 
     @Test
+    fun `invalid input is ignored`() {
+        val kotline = Kotline(TestTerm(listOf("hej\u001B hej")))
+        assertEquals("hej hej", kotline.readLine())
+    }
+
+    @Test
     fun `ctrl-d on non-empty line is a no-op`() {
         val kotline = Kotline(TestTerm(listOf("abc\u0004def")))
         assertEquals("abcdef", kotline.readLine())

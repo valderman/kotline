@@ -24,26 +24,26 @@ private const val E_ESCAPE_MORE = 49
 private const val SEQ_CTRL_LEFT = "5D"
 private const val SEQ_CTRL_RIGHT = "5C"
 
-internal fun getInput(term: Term): Input? {
-    val c = readUtf8Char(term)
-    return when (c) {
+/**
+ * Read a character or an escape code from the given terminal.
+ * A return value of null means we got an escape code we don't handle,
+ * so just ignore it and keep on reading.
+ */
+internal fun getInput(term: Term): Input? =
+    when (val c = readUtf8Char(term)) {
         K_RETURN -> Return
         K_ESCAPE -> handleEscape(term)
         K_BACKSPACE -> Backspace
-        K_EOF -> EOF
-        ACTUAL_EOF -> null
+        K_EOF -> EOF(hard = false)
+        ACTUAL_EOF -> EOF(hard = true)
         else -> Character(c.toChar())
     }
-}
 
-private fun handleEscape(term: Term): Input? {
-    val c = term.getChar()
-    return if (c == K_BRACKET) {
-        handleEscapeSequence(term)
-    } else {
-        null
+private fun handleEscape(term: Term): Input? =
+    when (val c = term.getChar()) {
+        K_BRACKET -> handleEscapeSequence(term)
+        else -> Character(c.toChar())
     }
-}
 
 private fun handleEscapeSequence(term: Term) =
     when (term.getChar()) {
