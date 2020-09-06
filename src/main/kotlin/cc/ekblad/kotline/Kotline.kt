@@ -1,6 +1,7 @@
 package cc.ekblad.kotline
 
 import java.io.Closeable
+import java.lang.IllegalStateException
 
 class Kotline(private val term: Term) : Closeable {
     private var history: ShadowHistory<AnsiLine> = ShadowHistory(AnsiLine(), { AnsiLine(it.toString()) })
@@ -17,7 +18,11 @@ class Kotline(private val term: Term) : Closeable {
     override fun close() {
         closed = true
         term.close()
-        Runtime.getRuntime().removeShutdownHook(shutdownHook)
+        try {
+            Runtime.getRuntime().removeShutdownHook(shutdownHook)
+        } catch (e: IllegalStateException) {
+            // Just ignore; we're in the middle of shutting down the VM
+        }
     }
 
     fun readLine(prompt: String = ""): String? {
