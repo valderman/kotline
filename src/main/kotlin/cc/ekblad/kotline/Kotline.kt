@@ -54,13 +54,13 @@ class Kotline(private val term: Term) : Closeable {
     }
 
     private fun handleEof(): String? {
-        newLine()
+        term.newLine()
         history.resetShadow(AnsiLine(term))
         return null
     }
 
     private fun handleReturn(): String {
-        newLine()
+        term.newLine()
         return if(currentLine.toString().isBlank()) {
             history.resetShadow(AnsiLine(term))
         } else {
@@ -79,11 +79,6 @@ class Kotline(private val term: Term) : Closeable {
         currentLine.refresh(prompt, oldWidth - currentLine.lineWidth)
         currentLine.moveToEnd(prompt)
     }
-
-    private fun newLine() {
-        term.print("\n")
-        term.flush()
-    }
 }
 
 fun <T> kotline(action: Kotline.() -> T): T =
@@ -93,7 +88,7 @@ private fun autodetectTerminal(): Term {
     val os = System.getProperty("os.name").toLowerCase()
     return when {
         os.contains("linux") -> nixTerm
-        os.contains("win") -> TODO("windows support")
+        os.contains("win") -> winTerm
         os.contains("mac") -> nixTerm
         os.contains("nix|aix|sunos") -> nixTerm
         else -> error("Unsupported OS: $os")

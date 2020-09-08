@@ -2,20 +2,22 @@ package cc.ekblad.kotline
 
 import java.nio.file.Files
 import java.nio.file.Path
+import java.nio.file.Paths
 
 val winTerm: WinTerm by lazy { WinTerm() }
 
 private val dllLoaded: Boolean by lazy {
-    val tempDir = createTempDir("kotline")
-    val dllPath = Path.of(tempDir.absolutePath, "winconsole.dll")
-    WinTerm::class.java.getResourceAsStream("winconsole.dll").use { source ->
+    val homeDir = System.getProperty("user.home")
+    val kotlineDir = Paths.get(homeDir, ".kotline")
+    if (Files.notExists(kotlineDir)) {
+        Files.createDirectory(kotlineDir)
+    }
+    val dllPath = Paths.get(kotlineDir.toString(), "windows_console_setup.dll").toAbsolutePath()
+    Files.deleteIfExists(dllPath)
+    WinTerm::class.java.getResourceAsStream("windows_console_setup.dll").use { source ->
         Files.newOutputStream(dllPath).use { source.copyTo(it) }
     }
-    System.load(dllPath.toAbsolutePath().toString())
-    Runtime.getRuntime().addShutdownHook(Thread {
-        Files.delete(dllPath)
-        Files.delete(dllPath.parent)
-    })
+    System.load(dllPath.toString())
     true
 }
 

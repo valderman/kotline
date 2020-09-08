@@ -5,7 +5,8 @@ package cc.ekblad.kotline
 
 private const val ACTUAL_EOF = -1
 
-private const val K_RETURN = 10
+private const val K_LINE_FEED = 10
+private const val K_RETURN = 13
 private const val K_ESCAPE = 27
 private const val K_BACKSPACE = 127
 private const val K_EOF = 4
@@ -21,6 +22,9 @@ private const val E_DELETE = 51
 private const val E_END = 52
 private const val E_ESCAPE_MORE = 49
 
+private const val E_HOME_WINDOWS = 72
+private const val E_END_WINDOWS = 70
+
 private const val SEQ_CTRL_LEFT = "5D"
 private const val SEQ_CTRL_RIGHT = "5C"
 
@@ -31,7 +35,7 @@ private const val SEQ_CTRL_RIGHT = "5C"
  */
 internal fun getInput(term: Term): Input? =
     when (val c = readUtf8Char(term)) {
-        K_RETURN -> Return
+        K_LINE_FEED, K_RETURN -> Return
         K_ESCAPE -> handleEscape(term)
         K_BACKSPACE -> Backspace
         K_EOF -> EOF(hard = false)
@@ -53,6 +57,8 @@ private fun handleEscapeSequence(term: Term) =
         E_DOWN -> Down
         E_DELETE -> { term.getChar(); Delete }
         E_END -> { term.getChar(); End }
+        E_END_WINDOWS -> End
+        E_HOME_WINDOWS -> Home
         E_ESCAPE_MORE -> handleEscapeCombo(term)
         else -> null
     }

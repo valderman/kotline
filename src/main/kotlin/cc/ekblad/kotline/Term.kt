@@ -29,4 +29,12 @@ interface Term : Closeable {
      * Ensure any buffered output is written to terminal.
      */
     fun flush() { System.out.flush() }
+
+    /**
+     * Move the cursor down to the next line.
+     */
+    fun newLine() {
+        print("\n")
+        flush()
+    }
 }
