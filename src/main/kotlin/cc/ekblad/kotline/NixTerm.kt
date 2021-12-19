@@ -3,7 +3,7 @@
  */
 package cc.ekblad.kotline
 
-import java.nio.charset.Charset
+import java.io.InputStreamReader
 
 val nixTerm: Term by lazy { NixTerm() }
 
@@ -24,8 +24,10 @@ private class NixTerm : Term {
         val invocation = arrayOf("/bin/stty", "-F", "/dev/tty") + args
         val p = Runtime.getRuntime().exec(invocation)
         p.waitFor()
-        return p.inputStream.use {
-            it.readAllBytes().toString(Charset.forName("utf-8"))
+        return p.inputStream.use { stream ->
+            InputStreamReader(stream).use { reader ->
+                reader.readText()
+            }
         }
     }
 }
