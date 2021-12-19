@@ -21,8 +21,8 @@ internal class ShadowHistory<T>(
         if (historyIndex == 0) {
             return
         }
-        if (shadowIndex >= shadow.size-1) {
-            shadow.add(clone(history[historyIndex-1]))
+        if (shadowIndex >= shadow.size - 1) {
+            shadow.add(clone(history[historyIndex - 1]))
         }
         shadowIndex += 1
     }

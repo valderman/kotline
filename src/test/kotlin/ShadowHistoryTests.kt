@@ -1,7 +1,6 @@
 import cc.ekblad.kotline.ShadowHistory
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertIterableEquals
-import org.junit.jupiter.api.Test
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class ShadowHistoryTests {
     @Test
@@ -109,7 +108,6 @@ class ShadowHistoryTests {
         assertEquals("a", history.current)
     }
 
-
     @Test
     fun `mutating shadow object does not mutate history`() {
         val history = ShadowHistory(arrayOf("a")) {
@@ -121,7 +119,7 @@ class ShadowHistoryTests {
         history.commitAndResetShadow(arrayOf("c"))
         history.back()
         history.back()
-        assertIterableEquals(arrayOf("a").asIterable(), history.current.asIterable())
+        assertEquals(listOf("a"), history.current.toList())
     }
 
     @Test
@@ -142,7 +140,7 @@ class ShadowHistoryTests {
         history.back()
         assertEquals("a", history.current)
     }
-    
+
     @Test
     fun `commit returns latest value`() {
         val history = ShadowHistory("a")

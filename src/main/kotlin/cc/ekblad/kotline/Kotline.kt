@@ -1,6 +1,7 @@
 package cc.ekblad.kotline
 
 import java.io.Closeable
+import java.util.Locale
 
 class Kotline(private val term: Term) : Closeable {
     private var history: ShadowHistory<AnsiLine> = ShadowHistory(AnsiLine(term), { AnsiLine(term, it.toString()) })
@@ -17,7 +18,7 @@ class Kotline(private val term: Term) : Closeable {
     override fun close() {
         close(false)
     }
-    
+
     private fun close(calledFromShutdownHook: Boolean) {
         closed = true
         term.close()
@@ -49,6 +50,7 @@ class Kotline(private val term: Term) : Closeable {
                     currentLine.toString().isEmpty() -> return handleEof()
                     c.hard -> return handleReturn()
                 }
+                null -> { /* no-op */ }
             }
         }
     }
@@ -61,7 +63,7 @@ class Kotline(private val term: Term) : Closeable {
 
     private fun handleReturn(): String {
         term.newLine()
-        return if(currentLine.toString().isBlank()) {
+        return if (currentLine.toString().isBlank()) {
             history.resetShadow(AnsiLine(term))
         } else {
             history.commitAndResetShadow(AnsiLine(term))
@@ -69,7 +71,7 @@ class Kotline(private val term: Term) : Closeable {
     }
 
     private fun moveHistory(prompt: String, offset: Int) {
-        require(offset in -1 .. 1)
+        require(offset in -1..1)
         val oldWidth = currentLine.lineWidth
         when (offset) {
             0 -> { }
@@ -85,7 +87,7 @@ fun <T> kotline(action: Kotline.() -> T): T =
     Kotline(autodetectTerminal()).use { it.action() }
 
 private fun autodetectTerminal(): Term {
-    val os = System.getProperty("os.name").toLowerCase()
+    val os = System.getProperty("os.name").lowercase(Locale.getDefault())
     return when {
         os.contains("linux") -> nixTerm
         os.contains("win") -> winTerm

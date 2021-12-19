@@ -6,13 +6,13 @@ import kotlin.math.min
 internal class AnsiLine(private val term: Term, initialValue: String = "") {
     private var charIndex: Int = 0
     private val cursorPosition: Int
-        get() = line.take(charIndex).sumBy(::charWidth)
+        get() = line.take(charIndex).sumOf(::charWidth)
     private var line: String = initialValue
     private val lineChars: Int
         get() = line.length
     val lineWidth: Int
-        get() = line.sumBy(::charWidth)
-    
+        get() = line.sumOf(::charWidth)
+
     override fun toString(): String = line
     fun set(newLine: String) {
         line = newLine
@@ -24,7 +24,7 @@ internal class AnsiLine(private val term: Term, initialValue: String = "") {
             offset < 0 -> charIndex = max(charIndex + offset, 0)
         }
         term.print("\r$prompt")
-        if(cursorPosition > 0) {
+        if (cursorPosition > 0) {
             term.print("\u001b[${cursorPosition}C")
         }
         term.flush()
@@ -41,7 +41,7 @@ internal class AnsiLine(private val term: Term, initialValue: String = "") {
     fun addChar(prompt: String, char: Char) {
         var before = line
         var after = ""
-        if(charIndex < lineChars) {
+        if (charIndex < lineChars) {
             before = line.substring(0, charIndex)
             after = line.substring(charIndex)
         }
@@ -68,7 +68,7 @@ internal class AnsiLine(private val term: Term, initialValue: String = "") {
 
     fun deleteCharAtCursor(prompt: String, before: Boolean) {
         if (!line.isEmpty()) {
-            if(before) {
+            if (before) {
                 moveCursor(prompt, -1)
             }
             line = line.removeRange(charIndex, min(charIndex + 1, lineChars))

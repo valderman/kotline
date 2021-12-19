@@ -7,7 +7,7 @@ internal fun convertUtf8Char(vararg chars: Byte) =
     String(chars, Charsets.UTF_8).codePointAt(0)
 
 internal fun charWidth(char: Char) =
-    when (char.toInt()) {
+    when (char.code) {
         in 0x1100..0x115F -> 2
         in 0x231A..0x231B -> 2
         in 0x2329..0x232A -> 2

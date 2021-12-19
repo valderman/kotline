@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalStdlibApi::class)
+
 import cc.ekblad.kotline.Term
 
 class TestTerm(
@@ -9,24 +11,19 @@ class TestTerm(
     override fun init() { onInit() }
     override fun close() { onClose() }
 
-    @ExperimentalUnsignedTypes
-    @ExperimentalStdlibApi
-    private val chars : Iterator<Int> = iterator {
+    private val chars: Iterator<Int> = iterator {
         inputLines.forEach {
             it.encodeToByteArray().forEach { yield(it.toUByte().toInt()) }
             if (sendReturnAtEol) {
-                yield('\n'.toInt())
+                yield('\n'.code)
             }
         }
     }
 
-    @ExperimentalUnsignedTypes
-    @ExperimentalStdlibApi
     override fun getChar(): Int =
         if (chars.hasNext()) {
             chars.next()
         } else {
             -1
         }
-
 }
