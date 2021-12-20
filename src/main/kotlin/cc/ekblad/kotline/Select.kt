@@ -34,7 +34,8 @@ fun Kotline.select(
     options: List<String>,
     prompt: String? = null,
     defaultSelectionState: Boolean = false,
-    initiallySelected: List<Int> = emptyList()
+    initiallySelected: List<Int> = emptyList(),
+    marker: Char = '*'
 ): List<Int> {
     if (options.isEmpty()) {
         return emptyList()
@@ -47,7 +48,7 @@ fun Kotline.select(
     val checked = options.map { defaultSelectionState }.toTypedArray()
     initiallySelected.forEach { checked[it] = true }
 
-    val checkedMarker = "[*] "
+    val checkedMarker = "[$marker] "
     val uncheckedMarker = "[ ] "
 
     fun onCommit(_index: Int) =
