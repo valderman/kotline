@@ -1,7 +1,7 @@
 package cc.ekblad.kotline
 
 internal sealed class Input
-internal class Character(val char: Char) : Input()
+internal data class Character(val char: Char) : Input()
 internal object Down : Input()
 internal object Up : Input()
 internal object Right : Input()

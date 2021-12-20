@@ -78,6 +78,14 @@ private fun handleEscapeCombo(term: Term) =
         else -> null
     }
 
+internal fun cursorUp(lines: Int) {
+    print("\u001b[${lines}A\r")
+}
+
+internal fun cursorDown(lines: Int) {
+    print("\u001b[${lines}B\r")
+}
+
 internal fun saveCursor() {
     print("\u001b[s")
 }

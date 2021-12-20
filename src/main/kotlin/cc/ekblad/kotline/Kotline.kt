@@ -3,7 +3,7 @@ package cc.ekblad.kotline
 import java.io.Closeable
 import java.util.Locale
 
-class Kotline(private val term: Term) : Closeable {
+class Kotline(internal val term: Term) : Closeable {
     private var history: ShadowHistory<AnsiLine> = ShadowHistory(AnsiLine(term), { AnsiLine(term, it.toString()) })
     private val currentLine: AnsiLine
         get() = history.current
