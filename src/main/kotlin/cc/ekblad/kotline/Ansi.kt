@@ -112,7 +112,7 @@ internal fun Term.getTermSize(): Pair<Int, Int> {
     val s = chars.map { it.toChar() }.joinToString("")
     val result = termSizeRegex.find(s)
     checkNotNull(result)
-    return Pair(result.groupValues[1].toInt(), result.groupValues[2].toInt())
+    return Pair(result.groupValues[2].toInt(), result.groupValues[1].toInt())
 }
 
 private val termSizeRegex = Regex("\\[([0-9]+);([0-9]+)R")
