@@ -26,24 +26,53 @@ fun Kotline.ask(options: List<String>, prompt: String? = null, marker: String = 
     var selectedIndex = 0
     val emptyMarker = "".padEnd(marker.length)
 
+    val (width, height) = term.getTermSize()
+    val trimmedOptions = options.map { it.chop(width - marker.length).padEnd(width - marker.length - 1) }
+
     prompt?.let { println(it) }
 
+    val itemsToShow = height - (if (prompt == null) 1 else 2)
+    val menuSize = min(itemsToShow, trimmedOptions.size)
+    var screenTop = 0
     while (true) {
-        options.forEachIndexed { index, option ->
-            val markerPrefix = if (index == selectedIndex) marker else emptyMarker
+        term.saveCursor()
+        trimmedOptions.subList(screenTop, screenTop + menuSize).forEachIndexed { index, option ->
+            val markerPrefix = if (index == selectedIndex - screenTop) marker else emptyMarker
             println("\r$markerPrefix $option")
         }
+        if (itemsToShow < trimmedOptions.size) {
+            print("↑$selectedIndex ↓${trimmedOptions.size - selectedIndex - 1}".padEnd(width))
+        }
 
+        term.cursorUp(menuSize - (selectedIndex - screenTop))
         val input = getInput(term)
-        term.cursorUp(options.size)
+        if (selectedIndex > 0) {
+            term.restoreCursor()
+        }
         when (input) {
             Input.Up -> selectedIndex = max(0, selectedIndex - 1)
-            Input.Down -> selectedIndex = min(options.size - 1, selectedIndex + 1)
+            Input.Down -> selectedIndex = min(trimmedOptions.size - 1, selectedIndex + 1)
             Input.Return -> {
+                if (prompt != null) {
+                    term.cursorUp(1)
+                }
                 term.clearScreen()
                 return selectedIndex
             }
             else -> { /* no-op */ }
         }
+
+        if(selectedIndex >= itemsToShow + screenTop) {
+            screenTop += 1
+        }
+        if(selectedIndex < screenTop) {
+            screenTop -= 1
+        }
     }
+}
+
+internal fun String.chop(maxLength: Int): String = if (this.length > maxLength) {
+    substring(0, maxLength - 4) + "..."
+} else {
+    this
 }
