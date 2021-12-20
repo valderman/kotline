@@ -1,8 +1,5 @@
 package cc.ekblad.kotline
 
-import kotlin.math.max
-import kotlin.math.min
-
 /**
  * Ask the user to choose zero or more of the given options.
  *
@@ -50,42 +47,30 @@ fun Kotline.select(
     val checked = options.map { defaultSelectionState }.toTypedArray()
     initiallySelected.forEach { checked[it] = true }
 
-    var selectedIndex = 0
     val checkedMarker = "[*] "
     val uncheckedMarker = "[ ] "
 
-    prompt?.let { println(it) }
-
-    while (true) {
-        options.forEachIndexed { index, option ->
-            val markerPrefix = when {
-                checked[index] -> checkedMarker
-                else -> uncheckedMarker
+    fun onCommit(_index: Int) =
+        checked.mapIndexedNotNull { index, selected ->
+            if (selected) {
+                index
+            } else {
+                null
             }
-            println("\r$markerPrefix $option")
         }
-        term.cursorUp(options.size - selectedIndex)
-        print("\r[")
 
-        val input = getInput(term)
-        if (selectedIndex > 0) {
-            term.cursorUp(selectedIndex)
-        }
-        when (input) {
-            Input.Up -> selectedIndex = max(0, selectedIndex - 1)
-            Input.Down -> selectedIndex = min(options.size - 1, selectedIndex + 1)
-            Input.Character(' ') -> checked[selectedIndex] = !checked[selectedIndex]
-            Input.Return -> {
-                term.clearScreen()
-                return checked.mapIndexedNotNull { index, selected ->
-                    if (selected) {
-                        index
-                    } else {
-                        null
-                    }
-                }
-            }
-            else -> { /* no-op */ }
+    fun onCharacter(selectedIndex: Int, character: Char) {
+        if (character == ' ') {
+            checked[selectedIndex] = !checked[selectedIndex]
         }
     }
+
+    return genericAsk(
+        ::onCommit,
+        ::onCharacter,
+        { index, _ -> if (checked[index]) checkedMarker else uncheckedMarker },
+        1,
+        options,
+        prompt
+    )
 }

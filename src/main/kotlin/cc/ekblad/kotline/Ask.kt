@@ -1,8 +1,5 @@
 package cc.ekblad.kotline
 
-import kotlin.math.max
-import kotlin.math.min
-
 /**
  * Ask the user to choose one of the given options.
  *
@@ -20,59 +17,13 @@ fun <T> Kotline.ask(vararg options: T, prompt: String? = null, marker: String = 
  * @return The index of the chosen option.
  */
 fun Kotline.ask(options: List<String>, prompt: String? = null, marker: String = ">"): Int {
-    require(options.isNotEmpty()) {
-        "at least one option must be given"
-    }
-    var selectedIndex = 0
     val emptyMarker = "".padEnd(marker.length)
-
-    val (width, height) = term.getTermSize()
-    val trimmedOptions = options.map { it.chop(width - marker.length).padEnd(width - marker.length - 1) }
-
-    prompt?.let { println(it) }
-
-    val itemsToShow = height - (if (prompt == null) 1 else 2)
-    val menuSize = min(itemsToShow, trimmedOptions.size)
-    var screenTop = 0
-    while (true) {
-        term.saveCursor()
-        trimmedOptions.subList(screenTop, screenTop + menuSize).forEachIndexed { index, option ->
-            val markerPrefix = if (index == selectedIndex - screenTop) marker else emptyMarker
-            println("\r$markerPrefix $option")
-        }
-        if (itemsToShow < trimmedOptions.size) {
-            print("↑$selectedIndex ↓${trimmedOptions.size - selectedIndex - 1}".padEnd(width))
-        }
-
-        term.cursorUp(menuSize - (selectedIndex - screenTop))
-        val input = getInput(term)
-        if (selectedIndex > 0) {
-            term.restoreCursor()
-        }
-        when (input) {
-            Input.Up -> selectedIndex = max(0, selectedIndex - 1)
-            Input.Down -> selectedIndex = min(trimmedOptions.size - 1, selectedIndex + 1)
-            Input.Return -> {
-                if (prompt != null) {
-                    term.cursorUp(1)
-                }
-                term.clearScreen()
-                return selectedIndex
-            }
-            else -> { /* no-op */ }
-        }
-
-        if(selectedIndex >= itemsToShow + screenTop) {
-            screenTop += 1
-        }
-        if(selectedIndex < screenTop) {
-            screenTop -= 1
-        }
-    }
-}
-
-internal fun String.chop(maxLength: Int): String = if (this.length > maxLength) {
-    substring(0, maxLength - 4) + "..."
-} else {
-    this
+    return genericAsk(
+        { it },
+        { _, _ -> Unit },
+        { index, selectedIndex -> if (index == selectedIndex) marker else emptyMarker },
+        0,
+        options,
+        prompt
+    )
 }

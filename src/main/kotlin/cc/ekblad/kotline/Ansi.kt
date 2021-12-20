@@ -78,6 +78,10 @@ private fun handleEscapeCombo(term: Term) =
         else -> null
     }
 
+internal fun Term.cursorRight(cols: Int) {
+    print("\u001b[${cols}C")
+}
+
 internal fun Term.cursorUp(lines: Int) {
     print("\u001b[${lines}A\r")
 }
