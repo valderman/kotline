@@ -25,7 +25,7 @@ fun Kotline.ask(options: List<String>, prompt: String? = null, marker: String = 
     }
     var selectedIndex = 0
     val emptyMarker = "".padEnd(marker.length)
-    
+
     prompt?.let { println(it) }
 
     while (true) {
@@ -38,7 +38,7 @@ fun Kotline.ask(options: List<String>, prompt: String? = null, marker: String = 
             Up -> selectedIndex = max(0, selectedIndex - 1)
             Down -> selectedIndex = min(options.size - 1, selectedIndex + 1)
             Return -> return selectedIndex
-            else -> { /* no-op */}
+            else -> { /* no-op */ }
         }
         cursorUp(options.size)
     }

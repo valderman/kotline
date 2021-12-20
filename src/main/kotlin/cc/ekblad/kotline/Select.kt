@@ -85,7 +85,7 @@ fun Kotline.select(
                     }
                 }
             }
-            else -> { /* no-op */}
+            else -> { /* no-op */ }
         }
     }
 }
