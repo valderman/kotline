@@ -77,9 +77,9 @@ internal class AnsiLine(private val term: Term, initialValue: String = "") {
     }
 
     fun refresh(prompt: String, padding: Int = 0) {
-        saveCursor()
+        term.saveCursor()
         term.print("\r$prompt$line${" ".repeat(max(0, padding))}")
-        restoreCursor()
+        term.restoreCursor()
         term.flush()
     }
 }

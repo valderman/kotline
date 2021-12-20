@@ -34,19 +34,19 @@ class Kotline(internal val term: Term) : Closeable {
         currentLine.moveCursor(prompt, 0)
         while (true) {
             when (val c = getInput(term)) {
-                is Character -> currentLine.addChar(prompt, c.char)
-                is Return -> return handleReturn()
-                is Left -> currentLine.moveCursor(prompt, -1)
-                is Right -> currentLine.moveCursor(prompt, 1)
-                is Delete -> currentLine.deleteCharAtCursor(prompt, false)
-                is Backspace -> currentLine.deleteCharAtCursor(prompt, true)
-                is Home -> currentLine.moveToStart(prompt)
-                is End -> currentLine.moveToEnd(prompt)
-                is ControlLeft -> currentLine.oneWordBack(prompt)
-                is ControlRight -> currentLine.oneWordForward(prompt)
-                is Up -> moveHistory(prompt, -1)
-                is Down -> moveHistory(prompt, 1)
-                is EOF -> when {
+                is Input.Character -> currentLine.addChar(prompt, c.char)
+                is Input.Return -> return handleReturn()
+                is Input.Left -> currentLine.moveCursor(prompt, -1)
+                is Input.Right -> currentLine.moveCursor(prompt, 1)
+                is Input.Delete -> currentLine.deleteCharAtCursor(prompt, false)
+                is Input.Backspace -> currentLine.deleteCharAtCursor(prompt, true)
+                is Input.Home -> currentLine.moveToStart(prompt)
+                is Input.End -> currentLine.moveToEnd(prompt)
+                is Input.ControlLeft -> currentLine.oneWordBack(prompt)
+                is Input.ControlRight -> currentLine.oneWordForward(prompt)
+                is Input.Up -> moveHistory(prompt, -1)
+                is Input.Down -> moveHistory(prompt, 1)
+                is Input.EOF -> when {
                     currentLine.toString().isEmpty() -> return handleEof()
                     c.hard -> return handleReturn()
                 }

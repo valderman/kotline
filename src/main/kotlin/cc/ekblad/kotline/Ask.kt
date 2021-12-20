@@ -35,11 +35,11 @@ fun Kotline.ask(options: List<String>, prompt: String? = null, marker: String = 
         }
 
         when (getInput(term)) {
-            Up -> selectedIndex = max(0, selectedIndex - 1)
-            Down -> selectedIndex = min(options.size - 1, selectedIndex + 1)
-            Return -> return selectedIndex
+            Input.Up -> selectedIndex = max(0, selectedIndex - 1)
+            Input.Down -> selectedIndex = min(options.size - 1, selectedIndex + 1)
+            Input.Return -> return selectedIndex
             else -> { /* no-op */ }
         }
-        cursorUp(options.size)
+        term.cursorUp(options.size)
     }
 }

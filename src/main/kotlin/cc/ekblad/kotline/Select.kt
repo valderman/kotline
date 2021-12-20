@@ -64,19 +64,19 @@ fun Kotline.select(
             }
             println("\r$markerPrefix $option")
         }
-        cursorUp(options.size - selectedIndex)
+        term.cursorUp(options.size - selectedIndex)
         print("\r[")
 
         val input = getInput(term)
         if (selectedIndex > 0) {
-            cursorUp(selectedIndex)
+            term.cursorUp(selectedIndex)
         }
         when (input) {
-            Up -> selectedIndex = max(0, selectedIndex - 1)
-            Down -> selectedIndex = min(options.size - 1, selectedIndex + 1)
-            Character(' ') -> checked[selectedIndex] = !checked[selectedIndex]
-            Return -> {
-                cursorDown(options.size)
+            Input.Up -> selectedIndex = max(0, selectedIndex - 1)
+            Input.Down -> selectedIndex = min(options.size - 1, selectedIndex + 1)
+            Input.Character(' ') -> checked[selectedIndex] = !checked[selectedIndex]
+            Input.Return -> {
+                term.cursorDown(options.size)
                 return checked.mapIndexedNotNull { index, selected ->
                     if (selected) {
                         index
