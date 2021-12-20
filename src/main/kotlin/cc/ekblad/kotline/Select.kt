@@ -76,7 +76,7 @@ fun Kotline.select(
             Input.Down -> selectedIndex = min(options.size - 1, selectedIndex + 1)
             Input.Character(' ') -> checked[selectedIndex] = !checked[selectedIndex]
             Input.Return -> {
-                term.cursorDown(options.size)
+                term.clearScreen()
                 return checked.mapIndexedNotNull { index, selected ->
                     if (selected) {
                         index

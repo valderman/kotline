@@ -94,6 +94,10 @@ internal fun Term.restoreCursor() {
     print("\u001b[u")
 }
 
+internal fun Term.clearScreen() {
+    print("\u001b[J")
+}
+
 internal fun Term.getTermSize(): Pair<Int, Int> {
     saveCursor()
     print("\u001B[9999;9999H")

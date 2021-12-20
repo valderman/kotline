@@ -34,12 +34,16 @@ fun Kotline.ask(options: List<String>, prompt: String? = null, marker: String = 
             println("\r$markerPrefix $option")
         }
 
-        when (getInput(term)) {
+        val input = getInput(term)
+        term.cursorUp(options.size)
+        when (input) {
             Input.Up -> selectedIndex = max(0, selectedIndex - 1)
             Input.Down -> selectedIndex = min(options.size - 1, selectedIndex + 1)
-            Input.Return -> return selectedIndex
+            Input.Return -> {
+                term.clearScreen()
+                return selectedIndex
+            }
             else -> { /* no-op */ }
         }
-        term.cursorUp(options.size)
     }
 }
