@@ -25,7 +25,7 @@ internal fun <T> Kotline.genericAsk(
     }
 
     var selectedIndex = 0
-    val (width, height) = term.getTermSize()
+    val (width, height) = getTermSize()
 
     // Clamp options to the width of the terminal
     val markerSize = formatMarker(0, 0).length
@@ -39,7 +39,7 @@ internal fun <T> Kotline.genericAsk(
     var screenTop = 0
 
     while (true) {
-        term.saveCursor()
+        saveCursor()
         trimmedOptions.subList(screenTop, screenTop + menuSize).forEachIndexed { index, option ->
             val markerPrefix = formatMarker(index + screenTop, selectedIndex)
             println("\r$markerPrefix $option")
@@ -52,15 +52,15 @@ internal fun <T> Kotline.genericAsk(
         }
 
         // Position the cursor at the currently selected element
-        term.cursorUp(menuSize - (selectedIndex - screenTop))
+        cursorUp(menuSize - (selectedIndex - screenTop))
         if (cursorOffset > 0) {
-            term.cursorRight(cursorOffset)
+            cursorRight(cursorOffset)
         }
 
         // Return the cursor to the beginning of the menu as soon as we get our input
         val input = getInput(term)
         if (selectedIndex > 0) {
-            term.restoreCursor()
+            restoreCursor()
         }
         when (input) {
             Input.Up -> selectedIndex = max(0, selectedIndex - 1)
@@ -69,9 +69,9 @@ internal fun <T> Kotline.genericAsk(
             Input.Return -> {
                 // Erase menu before returning
                 if (prompt != null) {
-                    term.cursorUp(1)
+                    cursorUp(1)
                 }
-                term.clearScreen()
+                clearScreen()
                 return onCommit(selectedIndex)
             }
             else -> { /* no-op */ }
