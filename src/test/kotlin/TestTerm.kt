@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalStdlibApi::class)
 
-import cc.ekblad.kotline.Term
+import cc.ekblad.kotline.terminal.Term
 
 class TestTerm(
     inputLines: List<String>,

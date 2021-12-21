@@ -1,4 +1,6 @@
-package cc.ekblad.kotline
+package cc.ekblad.kotline.menu
+
+import cc.ekblad.kotline.Kotline
 
 /**
  * Ask the user to choose one of the given options.

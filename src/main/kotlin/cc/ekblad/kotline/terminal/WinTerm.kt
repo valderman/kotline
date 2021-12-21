@@ -1,4 +1,4 @@
-package cc.ekblad.kotline
+package cc.ekblad.kotline.terminal
 
 import java.nio.file.Files
 import java.nio.file.Paths

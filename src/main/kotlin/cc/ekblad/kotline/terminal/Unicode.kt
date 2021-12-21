@@ -1,7 +1,7 @@
 /**
  * Unicode and UTF-8 utilities.
  */
-package cc.ekblad.kotline
+package cc.ekblad.kotline.terminal
 
 internal fun convertUtf8Char(vararg chars: Byte) =
     String(chars, Charsets.UTF_8).codePointAt(0)

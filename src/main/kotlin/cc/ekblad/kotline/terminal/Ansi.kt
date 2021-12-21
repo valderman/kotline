@@ -1,7 +1,7 @@
 /**
  * Input/output utilities for ANSI terminals.
  */
-package cc.ekblad.kotline
+package cc.ekblad.kotline.terminal
 
 private const val ACTUAL_EOF = -1
 

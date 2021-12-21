@@ -1,4 +1,4 @@
-package cc.ekblad.kotline
+package cc.ekblad.kotline.terminal
 
 import kotlin.math.max
 import kotlin.math.min

@@ -1,5 +1,11 @@
 package cc.ekblad.kotline
 
+import cc.ekblad.kotline.terminal.AnsiLine
+import cc.ekblad.kotline.terminal.Input
+import cc.ekblad.kotline.terminal.Term
+import cc.ekblad.kotline.terminal.getInput
+import cc.ekblad.kotline.terminal.nixTerm
+import cc.ekblad.kotline.terminal.winTerm
 import java.io.Closeable
 import java.util.Locale
 
@@ -92,7 +98,7 @@ private fun autodetectTerminal(): Term {
         os.contains("linux") -> nixTerm
         os.contains("win") -> winTerm
         os.contains("mac") -> nixTerm
-        os.contains("nix|aix|sunos") -> nixTerm
+        os.contains(Regex("nix|aix|sunos")) -> nixTerm
         else -> error("Unsupported OS: $os")
     }
 }

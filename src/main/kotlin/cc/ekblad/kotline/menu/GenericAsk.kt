@@ -1,5 +1,14 @@
-package cc.ekblad.kotline
+package cc.ekblad.kotline.menu
 
+import cc.ekblad.kotline.Kotline
+import cc.ekblad.kotline.terminal.Input
+import cc.ekblad.kotline.terminal.clearScreen
+import cc.ekblad.kotline.terminal.cursorRight
+import cc.ekblad.kotline.terminal.cursorUp
+import cc.ekblad.kotline.terminal.getInput
+import cc.ekblad.kotline.terminal.getTermSize
+import cc.ekblad.kotline.terminal.restoreCursor
+import cc.ekblad.kotline.terminal.saveCursor
 import kotlin.math.max
 import kotlin.math.min
 

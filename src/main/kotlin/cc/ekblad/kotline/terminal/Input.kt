@@ -1,4 +1,4 @@
-package cc.ekblad.kotline
+package cc.ekblad.kotline.terminal
 
 internal sealed class Input {
     internal data class Character(val char: Char) : Input()

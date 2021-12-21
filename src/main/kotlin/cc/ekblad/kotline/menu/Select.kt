@@ -1,4 +1,6 @@
-package cc.ekblad.kotline
+package cc.ekblad.kotline.menu
+
+import cc.ekblad.kotline.Kotline
 
 /**
  * Ask the user to choose zero or more of the given options.
@@ -51,6 +53,7 @@ fun Kotline.select(
     val checkedMarker = "[$marker] "
     val uncheckedMarker = "[ ] "
 
+    @Suppress("UNUSED_PARAMETER")
     fun onCommit(_index: Int) =
         checked.mapIndexedNotNull { index, selected ->
             if (selected) {

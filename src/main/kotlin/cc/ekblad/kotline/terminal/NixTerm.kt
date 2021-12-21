@@ -1,7 +1,7 @@
 /**
  * Terminal implementation for Linux and OSX systems.
  */
-package cc.ekblad.kotline
+package cc.ekblad.kotline.terminal
 
 import java.io.InputStreamReader
 
