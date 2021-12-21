@@ -1,4 +1,6 @@
 # Kotline
+![Available on JitPack](https://jitpack.io/v/cc.ekblad/kotline.svg)
+
 A minimalist library for interactive terminal applications for Kotlin/JVM.
 
 ## Features
@@ -28,6 +30,10 @@ dependencies {
 Then write some code:
 
 ```kotlin
+import cc.ekblad.kotline.kotline
+import cc.ekblad.kotline.menu.ask
+import cc.ekblad.kotline.menu.select
+
 fun main() {
     // Note that kotline needs to mess with your terminal settings to do its magic.
     // Reading/writing standard input/output using non-kotline functions while a kotline block is executing
